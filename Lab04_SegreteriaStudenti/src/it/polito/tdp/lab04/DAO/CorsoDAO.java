@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import it.polito.tdp.lab04.model.Corso;
+import it.polito.tdp.lab04.model.Model;
 import it.polito.tdp.lab04.model.Studente;
 
 public class CorsoDAO {
@@ -22,14 +23,13 @@ public class CorsoDAO {
 		List<Corso> corsi = new LinkedList<Corso>();
 
 		try {
+			
 			Connection conn = ConnectDB.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
-
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-
-				String codins = rs.getString("codins");
+                String codins = rs.getString("codins");
 				int numeroCrediti = rs.getInt("crediti");
 				String nome = rs.getString("nome");
 				int periodoDidattico = rs.getInt("pd");
@@ -55,16 +55,24 @@ public class CorsoDAO {
 	 * Dato un codice insegnamento, ottengo il corso
 	 */
 	public Corso getCorso(String codice) {
-		String sql="SELECT * FROM Corso WHERE codins=codice";
+		
+		String sql="SELECT * FROM Corso WHERE codins=?";
+		
 		try {
+			
 			Connection conn = ConnectDB.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
-
+            st.setString(1, codice);
 			ResultSet rs = st.executeQuery();
-			Corso c=new Corso(rs.getString("codins"),rs.getInt("crediti"),rs.getString("nome"),rs.getInt("pd"));
-		
+			
+			while (rs.next()) {
+			     Corso c=new Corso(rs.getString("codins"),rs.getInt("crediti"),rs.getString("nome"),rs.getInt("pd"));
+			     return c;
+			}
+			
 		    conn.close();
-		    return c;
+		    return  null;
+		   
 		    
 	       }catch(SQLException e) {
 		         throw new RuntimeException("Errore nel DB",e);
@@ -76,21 +84,24 @@ public class CorsoDAO {
 	 * Ottengo tutti gli studenti iscritti al Corso
 	 */
 	public List<Studente> getStudentiIscrittiAlCorso(Corso corso) {
+		
 		String codice=corso.getCodins();
-		String sql="SELECT S.* FROM studente S, iscrizione I WHERE I.codins=codice AND S.matricola=I.matricola";
+		String sql="SELECT S.* FROM studente S, iscrizione I WHERE I.codins=? AND S.matricola=I.matricola";
 		List<Studente> studenti=new LinkedList<Studente>();
 		
 		try {
+			
 			Connection conn = ConnectDB.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
-
+			st.setString(1, codice);
 			ResultSet rs = st.executeQuery();
 			
 			while(rs.next()) {
-				Studente s=new Studente(rs.getInt("matricola"),rs.getString("nome"),rs.getString("cognome"),rs.getString("pd"));
-			    System.out.println(rs.getInt("matricola") +" "+ rs.getString("nome")+" " + rs.getString("cognome")+" " + rs.getString("pd"));
+				Studente s=new Studente(rs.getInt("matricola"),rs.getString("nome"),rs.getString("cognome"),rs.getString("CDS"));
+			    System.out.println(rs.getInt("matricola") +" "+ rs.getString("nome")+" " + rs.getString("cognome")+" " + rs.getString("CDS"));
 			    studenti.add(s);
 			}
+			
 			conn.close();
 			
 		}catch(SQLException e) {
@@ -104,27 +115,27 @@ public class CorsoDAO {
 	/*
 	 * Data una matricola ed il codice insegnamento, iscrivi lo studente al corso.
 	 */
-	public boolean inscriviStudenteACorso(Studente studente, Corso corso) {
-		StudenteDAO sd=new StudenteDAO();
-		int mat=studente.getMatricola();
-		String codice=corso.getCodins();
-		String sql="INSERT INTO iscrizione SET matricola=mat,codins=codice";
-		List<Studente> studenticorso=this.getStudentiIscrittiAlCorso(corso);
+	public boolean inscriviStudenteACorso(int mat, String codice) {
+		Model model=new Model();
+		Corso corso=this.getCorso(codice);
+		String sql="INSERT INTO iscrizione SET matricola=?,codins=?";
 		
-		if(sd.getTuttiStudenti().contains(studente)&&!studenticorso.contains(studente)&&this.getTuttiICorsi().contains(corso)) {
-			
+		if(model.Studentepresente(mat)==true&&model.presenteCorso(mat, corso.getNome())==false&&this.getTuttiICorsi().contains(corso)) {	
 		    try {
 			    Connection conn = ConnectDB.getConnection();
 			    PreparedStatement st=conn.prepareStatement(sql);
-			    ResultSet rs = st.executeQuery();
+			    st.setInt(1, mat);
+			    st.setString(2, codice);
+			    st.executeUpdate();
 			    conn.close();
+			
 			    
 		    }catch(SQLException e) {
 		         throw new RuntimeException("Errore nel DB",e);
 		    }
-		    
 		    return true;
 		}
+		
 		
 		// TODO
 		// ritorna true se l'iscrizione e' avvenuta con successo

@@ -24,7 +24,7 @@
             <HBox spacing="30.0">
                <children>
                   <Label text="Corso :" />
-                  <ComboBox fx:id="btnScegliCorso" onAction="#doScegliCorso" prefWidth="200.0" promptText="Corsi" />
+                  <ComboBox fx:id="btnScegliCorso" prefWidth="200.0" promptText="Corsi" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" />
@@ -38,10 +38,10 @@
             <HBox spacing="5.0">
                <children>
                   <Label text="Studente :" />
-                  <TextField fx:id="NumeroM" prefWidth="100.0" />
-                  <CheckBox ellipsisString="" mnemonicParsing="false" selected="true" />
-                  <TextField fx:id="NomeStudente" editable="false" />
-                  <TextField fx:id="CognomeStudente" editable="false" />
+                  <TextField fx:id="NumeroM" prefWidth="100.0" promptText="Matricola" />
+                  <CheckBox fx:id="completamentoAuto" ellipsisString="" mnemonicParsing="false" onAction="#doCompleta" />
+                  <TextField fx:id="NomeStudente" editable="false" promptText="Nome" />
+                  <TextField fx:id="CognomeStudente" editable="false" promptText="Cognome" />
                </children>
                <padding>
                   <Insets bottom="20.0" left="20.0" />

@@ -47,6 +47,40 @@ public class StudenteDAO {
 		}
 		return studenti;
 	}
+	
+	public List<Corso> getCorsiStudente(int m){
+		
+		String sql="SELECT c.* FROM corso c, iscrizione i WHERE i.matricola=? AND c.codins=i.codins";
+		List<Corso> corsi=new LinkedList<Corso>();
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,m);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				   String codins = rs.getString("codins");
+					int numeroCrediti = rs.getInt("crediti");
+					String nome = rs.getString("nome");
+					int periodoDidattico = rs.getInt("pd");
+
+					System.out.println(codins + " " + numeroCrediti + " " + nome + " " + periodoDidattico);
+
+                    Corso c=new Corso(codins,numeroCrediti,nome,periodoDidattico);
+                    corsi.add(c);
+				
+			}
+
+			conn.close();
+
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db", e);
+		}
+		return corsi;
+		
+	}
 
 
 }

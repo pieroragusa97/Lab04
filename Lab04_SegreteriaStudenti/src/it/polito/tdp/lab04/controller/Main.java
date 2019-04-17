@@ -1,5 +1,6 @@
 package it.polito.tdp.lab04.controller;
 
+import it.polito.tdp.lab04.model.Model;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,6 +17,7 @@ public class Main extends Application {
 			BorderPane root = (BorderPane) loader.load();
 
 			SegreteriaStudentiController controller = loader.getController();
+			Model modello=new Model();
 
 			/*
 			 * Create and set the model here!
@@ -25,6 +27,7 @@ public class Main extends Application {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
+			controller.setModel(modello);
 			primaryStage.show();
 
 		} catch (Exception e) {

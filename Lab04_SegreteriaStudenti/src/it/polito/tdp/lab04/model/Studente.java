@@ -44,7 +44,7 @@ public class Studente {
 	public String toString() {
 		return "Studente [matricola=" + matricola + ", nome=" + nome + ", cognome=" + cognome + ", CDS=" + CDS + "]";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
